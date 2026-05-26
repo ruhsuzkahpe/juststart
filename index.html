@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JUST START</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;color:#f0ece3;font-family:'DM Mono','Courier New',monospace;min-height:100vh;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:#222;}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;font-family:'DM Mono',monospace;}
+
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* BUTTONS */
+.btn{border:none;padding:15px 36px;font-size:12px;font-weight:500;letter-spacing:3px;text-transform:uppercase;transition:all .25s;}
+.btn-yellow{background:#e8ff47;color:#0a0a0a;}
+.btn-yellow:hover{background:#fff;transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:#f0ece3;border:1px solid #2a2a2a;}
+.btn-ghost:hover{border-color:#e8ff47;color:#e8ff47;}
+.btn-sm{padding:10px 22px;font-size:11px;letter-spacing:2px;}
+
+/* NAV */
+.nav{padding:18px 28px;border-bottom:1px solid #141414;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#0a0a0a;z-index:50;}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:900;letter-spacing:-0.5px;}
+
+/* TABS */
+.tabs{border-bottom:1px solid #141414;display:flex;overflow-x:auto;background:#0a0a0a;}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:#555;font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:15px 20px;white-space:nowrap;transition:all .2s;}
+.tab.active{color:#e8ff47;border-bottom-color:#e8ff47;}
+.tab:hover:not(.active){color:#888;}
+
+/* CARDS */
+.card{background:#0f0f0f;border:1px solid #181818;padding:22px;transition:all .2s;margin-bottom:2px;}
+.card:hover{border-color:#252525;background:#111;}
+
+/* AVATAR */
+.av{background:#141414;border:1px solid #1e1e1e;display:flex;align-items:center;justify-content:center;font-size:10px;color:#555;letter-spacing:1px;flex-shrink:0;}
+
+/* TAG */
+.tag{display:inline-flex;align-items:center;gap:7px;background:#141414;border:1px solid #222;padding:6px 13px;font-size:11px;color:#aaa;margin:3px;}
+.tag .rm{background:none;border:none;color:#444;font-size:14px;padding:0;line-height:1;transition:color .2s;}
+.tag .rm:hover{color:#e8ff47;}
+
+/* INPUT */
+input,textarea{background:#0f0f0f;border:1px solid #1e1e1e;border-bottom:1px solid #333;color:#f0ece3;padding:13px 15px;font-family:'DM Mono',monospace;font-size:13px;outline:none;width:100%;transition:all .2s;resize:none;}
+input:focus,textarea:focus{border-bottom-color:#e8ff47;background:#111;}
+input::placeholder,textarea::placeholder{color:#333;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:#0f0f0f;border:1px solid #222;padding:28px;max-width:560px;width:100%;max-height:88vh;overflow-y:auto;}
+
+/* MISC */
+.pill{background:#e8ff47;color:#0a0a0a;font-size:10px;font-weight:500;padding:5px 12px;letter-spacing:1.5px;}
+.label{font-size:10px;color:#444;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.progress{height:1px;background:#141414;margin-bottom:44px;}
+.progress-fill{height:100%;background:#e8ff47;transition:width .5s;}
+.sched-btn{background:#0f0f0f;border:1px solid #1e1e1e;color:#555;padding:18px 0;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;flex:1;transition:all .25s;}
+.sched-btn.sel{border-color:#e8ff47;color:#e8ff47;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fadeUp .5s ease both;}
+.fu2{animation:fadeUp .5s .1s ease both;}
+.fu3{animation:fadeUp .5s .2s ease both;}
+.fu4{animation:fadeUp .5s .3s ease both;}
+
+@keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.ticker-wrap{overflow:hidden;border-top:1px solid #141414;border-bottom:1px solid #141414;padding:13px 0;margin:40px 0;}
+.ticker{display:flex;white-space:nowrap;animation:ticker 22s linear infinite;}
+.ticker span{padding:0 32px;font-size:10px;letter-spacing:3px;color:#2a2a2a;text-transform:uppercase;}
+.ticker span.y{color:#e8ff47;}
+
+.cat-btn{background:#141414;border:1px solid #1e1e1e;color:#555;padding:7px 15px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;transition:all .2s;}
+.cat-btn.sel{background:#e8ff47;color:#0a0a0a;border-color:#e8ff47;}
+.post-tag{font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;border-left:2px solid #e8ff47;padding-left:8px;display:inline-block;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<!-- ===== LANDING ===== -->
+<div id="s-landing" class="screen active">
+  <div class="nav">
+    <span class="logo">JUST START</span>
+    <button class="btn btn-ghost btn-sm" onclick="go('s-onboard')">Katıl</button>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:60px 28px;max-width:700px;margin:0 auto;width:100%;">
+    <div class="fu" style="font-size:10px;letter-spacing:5px;color:#444;margin-bottom:24px;text-transform:uppercase;">Türkiye · Beta</div>
+    <h1 class="fu2" style="font-family:'Playfair Display',serif;font-size:clamp(42px,9vw,84px);font-weight:900;line-height:.93;letter-spacing:-2px;margin-bottom:32px;">
+      Fikrin var<br>
+      <em style="color:#e8ff47;font-style:italic;">ortağın</em><br>
+      yok mu?
+    </h1>
+    <p class="fu3" style="color:#555;font-size:13px;line-height:1.9;margin-bottom:44px;max-width:400px;">
+      Müziğin, kitapların, hayallerin — seni tanımlayan her şey seni doğru insanlarla buluşturur. Sadece bir şey gerekiyor: başlamak.
+    </p>
+    <div class="fu4" style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn btn-yellow" onclick="go('s-onboard')">Profil Oluştur</button>
+      <button class="btn btn-ghost" onclick="go('s-app')">Keşfet</button>
+    </div>
+  </div>
+
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>girişim ortağı</span><span class="y">·</span>
+      <span>müzik arkadaşı</span><span class="y">·</span>
+      <span>kitap kulübü</span><span class="y">·</span>
+      <span>seyahat planı</span><span class="y">·</span>
+      <span>iş fikri</span><span class="y">·</span>
+      <span class="y">just start</span><span class="y">·</span>
+      <span>girişim ortağı</span><span class="y">·</span>
+      <span>müzik arkadaşı</span><span class="y">·</span>
+      <span>kitap kulübü</span><span class="y">·</span>
+      <span>seyahat planı</span><span class="y">·</span>
+      <span>iş fikri</span><span class="y">·</span>
+      <span class="y">just start</span><span class="y">·</span>
+    </div>
+  </div>
+
+  <div style="padding:0 28px 48px;max-width:700px;margin:0 auto;width:100%;">
+    <div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:48px;">
+      <div style="padding:0 36px 0 0;">
+        <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#e8ff47;line-height:1;">2.4K</div>
+        <div style="font-size:10px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-top:5px;">Kullanıcı</div>
+      </div>
+      <div style="padding:0 36px;border-left:1px solid #1e1e1e;">
+        <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#e8ff47;line-height:1;">340+</div>
+        <div style="font-size:10px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-top:5px;">Başlık</div>
+      </div>
+      <div style="padding:0 36px;border-left:1px solid #1e1e1e;">
+        <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#e8ff47;line-height:1;">87%</div>
+        <div style="font-size:10px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-top:5px;">Ort. Eşleşme</div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;letter-spacing:4px;color:#444;margin-bottom:24px;text-transform:uppercase;">Nasıl çalışır?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:#141414;">
+      <div style="background:#0a0a0a;padding:24px 20px;">
+        <div style="font-size:11px;color:#e8ff47;margin-bottom:10px;letter-spacing:2px;">01</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:7px;">Profilini oluştur</div>
+        <div style="font-size:11px;color:#555;line-height:1.7;">Müziğini, kitaplarını, hayallerini paylaş.</div>
+      </div>
+      <div style="background:#0a0a0a;padding:24px 20px;">
+        <div style="font-size:11px;color:#e8ff47;margin-bottom:10px;letter-spacing:2px;">02</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:7px;">Eşleşmeleri gör</div>
+        <div style="font-size:11px;color:#555;line-height:1.7;">Sistem seni en çok benzeyen insanlarla buluşturur.</div>
+      </div>
+      <div style="background:#0a0a0a;padding:24px 20px;">
+        <div style="font-size:11px;color:#e8ff47;margin-bottom:10px;letter-spacing:2px;">03</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:7px;">Konuş, başla</div>
+        <div style="font-size:11px;color:#555;line-height:1.7;">Soru sor, deneyim paylaş, ortak bul.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:18px 28px;border-top:1px solid #141414;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <span style="font-size:10px;color:#2a2a2a;letter-spacing:2px;">JUST START © 2025</span>
+    <span style="font-size:10px;color:#2a2a2a;">Sadece başla.</span>
+  </div>
+</div>
+
+<!-- ===== ONBOARDING ===== -->
+<div id="s-onboard" class="screen">
+  <div style="max-width:560px;margin:0 auto;padding:36px 24px;width:100%;flex:1;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;">
+      <span class="logo" style="font-size:16px;">JUST START</span>
+      <span id="step-counter" style="font-size:10px;color:#444;letter-spacing:2px;"></span>
+    </div>
+    <div class="progress"><div id="prog-fill" class="progress-fill" style="width:0%"></div></div>
+    <div id="step-content" style="flex:1;"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="s-app" class="screen">
+  <div class="nav">
+    <span class="logo" style="font-size:16px;">JUST START</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:9px;color:#4a8a4a;letter-spacing:1px;">● Canlı</span>
+      <div class="av" style="width:32px;height:32px;">SEN</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('feed',this)">Akış</button>
+    <button class="tab" onclick="switchTab('matches',this)">Eşleşmeler</button>
+    <button class="tab" onclick="switchTab('profile',this)">Profilim</button>
+  </div>
+  <div style="flex:1;padding:20px;max-width:660px;margin:0 auto;width:100%;">
+    <div id="tab-feed"></div>
+    <div id="tab-matches" style="display:none;"></div>
+    <div id="tab-profile" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-post" class="overlay" onclick="closeModal('modal-post')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="modal-post-content"></div>
+  </div>
+</div>
+
+<div id="modal-user" class="overlay" onclick="closeModal('modal-user')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="modal-user-content"></div>
+  </div>
+</div>
+
+<div id="modal-newpost" class="overlay" onclick="closeModal('modal-newpost')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">
+      <span style="font-family:'Playfair Display',serif;font-size:20px;">Yeni Başlık</span>
+      <button onclick="closeModal('modal-newpost')" style="background:none;border:none;color:#444;font-size:22px;">×</button>
+    </div>
+    <div class="label">Kategori</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;" id="cat-btns">
+      <button class="cat-btn sel" onclick="selCat(this)">Soru</button>
+      <button class="cat-btn" onclick="selCat(this)">Deneyim</button>
+      <button class="cat-btn" onclick="selCat(this)">Arıyorum</button>
+      <button class="cat-btn" onclick="selCat(this)">Motivasyon</button>
+      <button class="cat-btn" onclick="selCat(this)">Duyuru</button>
+    </div>
+    <input id="np-title" type="text" placeholder="Başlık..." style="margin-bottom:10px;"/>
+    <textarea id="np-body" rows="5" placeholder="Ne sormak veya paylaşmak istiyorsun?" style="margin-bottom:14px;"></textarea>
+    <button class="btn btn-yellow" style="width:100%;" onclick="submitPost()">Paylaş</button>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────
+var userTags = {};
+var userSchedule = null;
+var currentStep = 0;
+
+var STEPS = [
+  {key:"music",   label:"Müzik zevkin nasıl?",          sub:"Seni tanımlayan tarzı yaz",              placeholder:"Indie rock, caz, arabesk, metal...",  icon:"♪", hint:"İnsanlar müzikte buluşur."},
+  {key:"food",    label:"En çok sevdiğin yemekler",      sub:"Sofra arkadaşlığı önemli",               placeholder:"Döner, sushi, anne yemeği, ramen...", icon:"◈", hint:"Aynı lezzetleri seven insanlar iyi anlaşır."},
+  {key:"books",   label:"Seni etkileyen kitaplar",       sub:"Okumak istediklerin de olabilir",         placeholder:"Suç ve Ceza, Dune, Sapiens...",       icon:"◻", hint:"Kitap tavsiyesi en güçlü bağdır."},
+  {key:"series",  label:"Takip ettiğin yapımlar",        sub:"Dizi, film, belgesel — fark etmez",       placeholder:"Breaking Bad, Dark, Interstellar...",  icon:"▶", hint:"\"Onu izledin mi?\" sorusu arkadaşlık başlatır."},
+  {key:"hobbies", label:"Neler yapıyorsun?",             sub:"Hayatına giren her şey",                  placeholder:"Fotoğrafçılık, müzik üretmek, koşu...",icon:"◆", hint:"Hobiler seni en iyi anlatan şeydir."},
+  {key:"wishes",  label:"Hayatta ne istiyorsun?",        sub:"Büyük veya küçük, önemli değil",          placeholder:"Kendi şirketimi kurmak, dünya turu...",icon:"✦", hint:"Aynı hayalleri paylaşan biri seni bekliyor."},
+];
+
+var USERS = [
+  {id:1,name:"Zeynep A.",av:"ZA",city:"İstanbul",music:["Indie Rock","Post-punk"],books:["Suç ve Ceza","Dune"],hobbies:["Fotoğrafçılık","Film"],schedule:"gece",wishes:["Kendi stüdyomu açmak","Japonya'ya gitmek"],match:91,bio:"Grafik tasarımcı, geceleri müzik dinleyerek iş yapıyorum.",online:true},
+  {id:2,name:"Mert B.",av:"MB",city:"Ankara",music:["Jazz","Lo-fi"],books:["Sapiens","Atomik Alışkanlıklar"],hobbies:["Müzik üretmek","Yürüyüş"],schedule:"sabah",wishes:["Albüm çıkarmak","Freelance geçiş"],match:78,bio:"Yazılımcı ama asıl işi müzik. Henüz başlayamadı.",online:false},
+  {id:3,name:"Elif K.",av:"EK",city:"İzmir",music:["Alternatif","Folk"],books:["Küçük Prens","Siddhartha"],hobbies:["Yoga","Seyahat","Yazarlık"],schedule:"sabah",wishes:["Kitap yazmak","Van yaşamı"],match:64,bio:"Pazarlamacı. Aslında yazar olmak istiyor.",online:true},
+];
+
+var POSTS = [
+  {id:1,author:"Zeynep A.",av:"ZA",city:"İstanbul",time:"43 dakika önce",tag:"Soru",title:"Grafik tasarım portfolyomu nasıl büyütebilirim?",body:"3 yıldır ajans çalışıyorum ama kendi işimde çalışmak istiyorum. Portfolyo oluştururken nelere dikkat ettiniz? Müşteri bulmak için nereden başladınız?",replies:[{author:"Mert B.",av:"MB",text:"Behance'e yükle, LinkedIn'de düzenli paylaş. İlk 3 ay tepki gelmez ama devam et. Ben böyle buldum ilk müşterimi."}],likes:47,liked:false},
+  {id:2,author:"Mert B.",av:"MB",city:"Ankara",time:"2 saat önce",tag:"Deneyim",title:"Ev stüdyosu kurdum — 6 ayda öğrendiklerimi paylaşıyorum",body:"Başlangıçta her şeyi yanlış yaptım. Pahalı ekipman aldım, akustik düşünmedim. Şimdi geriye dönüp bakınca çok daha ucuza ve doğru yapabilirdim. Detayları sormak isteyenler burada.",replies:[{author:"Elif K.",av:"EK",text:"Mikrofon için ne önerisin başlangıç seviyesi için?"}],likes:112,liked:false},
+  {id:3,author:"Elif K.",av:"EK",city:"İzmir",time:"5 saat önce",tag:"Arıyorum",title:"Van yaşamına geçmeyi düşünenler — birlikte planlayalım",body:"6 aydır araştırıyorum ama yanımda bunu konuşacak kimse yok. Çevrem deli gibi bakıyor. Bu fikri gerçekten düşünen var mı?",replies:[],likes:89,liked:false},
+  {id:4,author:"Zeynep A.",av:"ZA",city:"İstanbul",time:"1 gün önce",tag:"Motivasyon",title:"İlk müşterimi buldum — JUST START gerçekten işe yarıyor",body:"Buraya 3 hafta önce katıldım. Mert ile bağlantı kurdum, o bana portfolyo konusunda yol gösterdi, ben de ona sosyal medya stratejisi için yardım ettim. İlk ücretli müşterim geldi geçen hafta.",replies:[{author:"Mert B.",av:"MB",text:"Bu karşılıklı oldu gerçekten 🤝 Devam!"}],likes:203,liked:false},
+];
+
+var selectedCat = "Soru";
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function go(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  if(id === 's-onboard'){ currentStep = 0; renderStep(); }
+  if(id === 's-app'){ renderApp(); }
+}
+
+// ─── ONBOARDING ──────────────────────────────────────────
+function renderStep() {
+  var total = STEPS.length + 1;
+  var pct = ((currentStep + 1) / total) * 100;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('step-counter').textContent = (currentStep+1) + ' / ' + total;
+
+  var c = document.getElementById('step-content');
+
+  if(currentStep < STEPS.length) {
+    var s = STEPS[currentStep];
+    var key = s.key;
+    var existing = (userTags[key] || []);
+    var tagsHtml = existing.map(function(t,i){
+      return '<span class="tag">' + esc(t) + '<button class="rm" onclick="removeTag(\'' + key + '\',' + i + ')">×</button></span>';
+    }).join('');
+
+    c.innerHTML = '<div class="fu">'
+      + '<div style="font-size:26px;margin-bottom:14px;">' + s.icon + '</div>'
+      + '<h2 style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;margin-bottom:7px;line-height:1.2;">' + s.label + '</h2>'
+      + '<p style="font-size:12px;color:#555;margin-bottom:5px;">' + s.sub + '</p>'
+      + '<p style="font-size:11px;color:#2a2a2a;margin-bottom:28px;font-style:italic;">"' + s.hint + '"</p>'
+      + '<div style="display:flex;gap:8px;margin-bottom:14px;">'
+      + '<input id="tag-input" type="text" placeholder="' + s.placeholder + '" onkeydown="if(event.key===\'Enter\')addTag(\'' + key + '\')" style="flex:1;"/>'
+      + '<button class="btn btn-yellow" onclick="addTag(\'' + key + '\')" style="padding:13px 18px;letter-spacing:0;font-size:18px;">+</button>'
+      + '</div>'
+      + '<div id="tags-display" style="min-height:44px;margin-bottom:36px;">' + tagsHtml + '</div>'
+      + '<div style="display:flex;gap:10px;">'
+      + (currentStep > 0 ? '<button class="btn btn-ghost btn-sm" onclick="prevStep()">← Geri</button>' : '')
+      + '<button class="btn btn-yellow" onclick="nextStep()">' + (currentStep === STEPS.length-1 ? 'Son Adım →' : 'Devam →') + '</button>'
+      + '</div>'
+      + '</div>';
+
+    setTimeout(function(){ var el = document.getElementById('tag-input'); if(el) el.focus(); }, 100);
+
+  } else {
+    // schedule step
+    c.innerHTML = '<div class="fu">'
+      + '<div style="font-size:26px;margin-bottom:14px;">◐</div>'
+      + '<h2 style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:700;margin-bottom:7px;">Bir şey daha.</h2>'
+      + '<p style="font-size:12px;color:#555;margin-bottom:5px;">Sen gece mi, sabah mı insanısın?</p>'
+      + '<p style="font-size:11px;color:#2a2a2a;margin-bottom:28px;font-style:italic;">"Ritmin bile bir şeyler söyler."</p>'
+      + '<div style="display:flex;gap:8px;margin-bottom:40px;">'
+      + '<button id="btn-gece" class="sched-btn' + (userSchedule==='gece'?' sel':'') + '" onclick="selSched(\'gece\')">🌙<br><span style="font-size:10px;margin-top:6px;display:block;">Gece Kuşu</span></button>'
+      + '<button id="btn-sabah" class="sched-btn' + (userSchedule==='sabah'?' sel':'') + '" onclick="selSched(\'sabah\')">☀️<br><span style="font-size:10px;margin-top:6px;display:block;">Sabah İnsanı</span></button>'
+      + '</div>'
+      + '<button class="btn btn-yellow" onclick="go(\'s-app\')">Keşfetmeye Başla →</button>'
+      + '</div>';
+  }
+}
+
+function addTag(key) {
+  var el = document.getElementById('tag-input');
+  if(!el) return;
+  var val = el.value.trim();
+  if(!val) return;
+  if(!userTags[key]) userTags[key] = [];
+  userTags[key].push(val);
+  el.value = '';
+  el.focus();
+  renderTagsDisplay(key);
+}
+
+function removeTag(key, i) {
+  userTags[key].splice(i, 1);
+  renderTagsDisplay(key);
+}
+
+function renderTagsDisplay(key) {
+  var d = document.getElementById('tags-display');
+  if(!d) return;
+  d.innerHTML = (userTags[key] || []).map(function(t,i){
+    return '<span class="tag">' + esc(t) + '<button class="rm" onclick="removeTag(\'' + key + '\',' + i + ')">×</button></span>';
+  }).join('');
+}
+
+function nextStep() { currentStep++; renderStep(); }
+function prevStep() { currentStep--; renderStep(); }
+
+function selSched(v) {
+  userSchedule = v;
+  document.querySelectorAll('.sched-btn').forEach(function(b){ b.classList.remove('sel'); });
+  document.getElementById('btn-' + v).classList.add('sel');
+}
+
+// ─── APP ─────────────────────────────────────────────────
+function renderApp() {
+  renderFeed();
+  renderMatches();
+  renderProfile();
+}
+
+function switchTab(name, btn) {
+  ['feed','matches','profile'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+// FEED
+function renderFeed() {
+  var html = '<div class="card" style="margin-bottom:16px;cursor:pointer;" onclick="openModal(\'modal-newpost\')">'
+    + '<div style="display:flex;gap:10px;align-items:center;">'
+    + '<div class="av" style="width:34px;height:34px;">SEN</div>'
+    + '<div style="flex:1;font-size:12px;color:#2a2a2a;padding:12px 14px;border:1px solid #1e1e1e;background:#141414;">Bir şey sor, deneyimini paylaş veya biri ara...</div>'
+    + '</div></div>';
+
+  POSTS.forEach(function(p) {
+    var preview = p.body.length > 110 ? p.body.slice(0,110) + '...' : p.body;
+    html += '<div class="card" onclick="openPost(' + p.id + ')">'
+      + '<div style="display:flex;gap:12px;">'
+      + '<div class="av" style="width:36px;height:36px;margin-top:2px;">' + p.av + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
+      + '<span style="font-size:12px;color:#888;">' + p.author + ' <span style="color:#333;font-size:10px;">' + p.city + '</span></span>'
+      + '<span style="font-size:9px;color:#333;">' + p.time + '</span>'
+      + '</div>'
+      + '<span class="post-tag">' + p.tag + '</span>'
+      + '<h3 style="font-size:14px;font-weight:500;margin-bottom:7px;line-height:1.4;color:#e8e4db;">' + esc(p.title) + '</h3>'
+      + '<p style="font-size:12px;color:#555;line-height:1.7;margin-bottom:12px;">' + esc(preview) + '</p>'
+      + '<div style="display:flex;gap:18px;align-items:center;">'
+      + '<span style="font-size:10px;color:#444;letter-spacing:1px;">↩ ' + p.replies.length + ' yanıt</span>'
+      + '<button onclick="event.stopPropagation();toggleLike(' + p.id + ')" style="background:none;border:none;color:' + (p.liked?'#e8ff47':'#444') + ';font-family:\'DM Mono\',monospace;font-size:10px;letter-spacing:1px;">'
+      + (p.liked?'♥':'♡') + ' ' + p.likes
+      + '</button>'
+      + '</div></div></div></div>';
+  });
+
+  document.getElementById('tab-feed').innerHTML = html;
+}
+
+function openPost(id) {
+  var p = POSTS.find(function(x){ return x.id === id; });
+  if(!p) return;
+
+  var repliesHtml = p.replies.map(function(r){
+    return '<div style="display:flex;gap:10px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #141414;">'
+      + '<div class="av" style="width:28px;height:28px;font-size:9px;flex-shrink:0;">' + r.av + '</div>'
+      + '<div><div style="font-size:11px;color:#555;margin-bottom:4px;">' + r.author + '</div>'
+      + '<div style="font-size:12px;color:#777;line-height:1.6;">' + esc(r.text) + '</div></div></div>';
+  }).join('');
+
+  document.getElementById('modal-post-content').innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
+    + '<div style="display:flex;gap:10px;align-items:center;">'
+    + '<div class="av" style="width:36px;height:36px;">' + p.av + '</div>'
+    + '<div><div style="font-size:12px;">' + p.author + '</div><div style="font-size:10px;color:#444;">' + p.city + ' · ' + p.time + '</div></div>'
+    + '</div>'
+    + '<button onclick="closeModal(\'modal-post\')" style="background:none;border:none;color:#444;font-size:22px;">×</button>'
+    + '</div>'
+    + '<span class="post-tag" style="margin-bottom:12px;">' + p.tag + '</span>'
+    + '<h3 style="font-family:\'Playfair Display\',serif;font-size:20px;margin-bottom:12px;line-height:1.3;margin-top:8px;">' + esc(p.title) + '</h3>'
+    + '<p style="font-size:13px;color:#666;line-height:1.8;margin-bottom:20px;">' + esc(p.body) + '</p>'
+    + '<div style="display:flex;gap:16px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #181818;">'
+    + '<button onclick="toggleLike(' + p.id + ');openPost(' + p.id + ')" style="background:none;border:none;color:' + (p.liked?'#e8ff47':'#444') + ';font-family:\'DM Mono\',monospace;font-size:11px;">' + (p.liked?'♥':'♡') + ' ' + p.likes + ' beğeni</button>'
+    + '<span style="font-size:10px;color:#444;">↩ ' + p.replies.length + ' yanıt</span>'
+    + '</div>'
+    + (repliesHtml ? '<div style="margin-bottom:18px;">' + repliesHtml + '</div>' : '')
+    + '<textarea id="reply-input" rows="3" placeholder="Yanıtını yaz..." style="margin-bottom:10px;"></textarea>'
+    + '<button class="btn btn-yellow btn-sm" onclick="submitReply(' + p.id + ')">Yanıtla</button>';
+
+  openModal('modal-post');
+}
+
+function submitReply(id) {
+  var el = document.getElementById('reply-input');
+  if(!el || !el.value.trim()) return;
+  var p = POSTS.find(function(x){ return x.id===id; });
+  p.replies.push({author:"Sen", av:"SEN", text:el.value.trim()});
+  renderFeed();
+  openPost(id);
+}
+
+function toggleLike(id) {
+  var p = POSTS.find(function(x){ return x.id===id; });
+  p.liked = !p.liked;
+  p.likes += p.liked ? 1 : -1;
+  renderFeed();
+}
+
+// MATCHES
+function renderMatches() {
+  var html = '<div style="margin-bottom:24px;">'
+    + '<h2 style="font-family:\'Playfair Display\',serif;font-size:22px;margin-bottom:6px;">Eşleşmeler</h2>'
+    + '<p style="font-size:11px;color:#444;line-height:1.7;">Seçimlerindeki ortak noktalara göre hesaplandı.</p>'
+    + '</div>';
+
+  USERS.forEach(function(u) {
+    html += '<div class="card" onclick="openUser(' + u.id + ')">'
+      + '<div style="display:flex;gap:14px;">'
+      + '<div>'
+      + '<div class="av" style="width:46px;height:46px;font-size:11px;margin-bottom:5px;">' + u.av + '</div>'
+      + (u.online ? '<div style="font-size:8px;color:#4a8a4a;text-align:center;letter-spacing:1px;">● online</div>' : '')
+      + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">'
+      + '<div><span style="font-size:14px;font-weight:500;">' + u.name + '</span> <span style="font-size:10px;color:#444;">' + u.city + '</span></div>'
+      + '<span class="pill">%' + u.match + '</span>'
+      + '</div>'
+      + '<p style="font-size:11px;color:#555;margin-bottom:10px;line-height:1.6;font-style:italic;">"' + u.bio + '"</p>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;">'
+      + u.music.concat(u.hobbies).slice(0,5).map(function(item){ return '<span style="font-size:10px;color:#555;background:#141414;padding:4px 10px;border:1px solid #1e1e1e;">' + item + '</span>'; }).join('')
+      + '</div>'
+      + '<span style="font-size:10px;color:#333;">' + (u.schedule==='gece'?'🌙 Gece kuşu':'☀️ Sabah insanı') + '</span>'
+      + '</div></div></div>';
+  });
+
+  document.getElementById('tab-matches').innerHTML = html;
+}
+
+function openUser(id) {
+  var u = USERS.find(function(x){ return x.id===id; });
+  if(!u) return;
+
+  var sections = [['Müzik',u.music],['Kitaplar',u.books],['Hobiler',u.hobbies],['İstekler',u.wishes]];
+  var sectHtml = sections.map(function(s){
+    return '<div style="margin-bottom:14px;">'
+      + '<div class="label">' + s[0] + '</div>'
+      + '<div>' + s[1].map(function(i){ return '<span style="font-size:11px;color:#777;background:#141414;padding:5px 12px;border:1px solid #1e1e1e;display:inline-block;margin:2px;">' + i + '</span>'; }).join('') + '</div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('modal-user-content').innerHTML =
+    '<div style="display:flex;justify-content:space-between;margin-bottom:22px;">'
+    + '<div style="display:flex;gap:12px;align-items:center;">'
+    + '<div class="av" style="width:50px;height:50px;font-size:12px;">' + u.av + '</div>'
+    + '<div><div style="font-size:15px;font-weight:500;">' + u.name + '</div>'
+    + '<div style="font-size:10px;color:#444;">' + u.city + ' · ' + (u.schedule==='gece'?'🌙 Gece':'☀️ Sabah') + '</div>'
+    + (u.online ? '<div style="font-size:9px;color:#4a8a4a;margin-top:3px;">● Şu an çevrimiçi</div>' : '')
+    + '</div></div>'
+    + '<button onclick="closeModal(\'modal-user\')" style="background:none;border:none;color:#444;font-size:22px;">×</button>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #181818;">'
+    + '<span class="pill">%' + u.match + '</span>'
+    + '<span style="font-size:11px;color:#444;">seninle eşleşiyor</span>'
+    + '</div>'
+    + '<p style="font-size:12px;color:#555;line-height:1.7;margin-bottom:20px;font-style:italic;">"' + u.bio + '"</p>'
+    + sectHtml
+    + '<button class="btn btn-yellow" style="width:100%;margin-top:10px;">Mesaj Gönder</button>';
+
+  openModal('modal-user');
+}
+
+// PROFILE
+function renderProfile() {
+  var stepHtml = STEPS.map(function(s){
+    var items = userTags[s.key] || [];
+    var content = items.length > 0
+      ? items.map(function(t){ return '<span style="font-size:11px;color:#777;background:#141414;padding:5px 12px;border:1px solid #1e1e1e;display:inline-block;margin:2px;">' + esc(t) + '</span>'; }).join('')
+      : '<span style="font-size:11px;color:#222;font-style:italic;">Henüz eklenmedi</span>';
+    return '<div style="background:#0f0f0f;border:1px solid #181818;padding:18px;margin-bottom:1px;">'
+      + '<div class="label">' + s.icon + ' ' + s.label + '</div>'
+      + '<div>' + content + '</div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('tab-profile').innerHTML =
+    '<div style="display:flex;gap:14px;align-items:center;background:#0f0f0f;border:1px solid #181818;padding:22px;margin-bottom:1px;">'
+    + '<div class="av" style="width:52px;height:52px;font-size:12px;">SEN</div>'
+    + '<div><div style="font-size:15px;font-weight:500;margin-bottom:4px;">Senin Profil</div>'
+    + '<div style="font-size:10px;color:#444;letter-spacing:2px;text-transform:uppercase;">Just Start üyesi</div>'
+    + (userSchedule ? '<div style="font-size:11px;color:#555;margin-top:6px;">' + (userSchedule==='gece'?'🌙 Gece kuşu':'☀️ Sabah insanı') + '</div>' : '')
+    + '</div></div>'
+    + stepHtml
+    + '<div style="margin-top:20px;padding:18px;background:#0f0f0f;border:1px solid #181818;">'
+    + '<p style="font-size:11px;color:#444;margin-bottom:12px;">Profilini tamamla, daha iyi eşleşmeler al.</p>'
+    + '<button class="btn btn-ghost btn-sm" onclick="go(\'s-onboard\')">Profili Düzenle</button>'
+    + '</div>';
+}
+
+// NEW POST
+function selCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  selectedCat = btn.textContent;
+}
+
+function submitPost() {
+  var title = document.getElementById('np-title').value.trim();
+  var body = document.getElementById('np-body').value.trim();
+  if(!title) return;
+  POSTS.unshift({
+    id: Date.now(),
+    author:"Sen", av:"SEN", city:"Türkiye",
+    time:"Şimdi", tag:selectedCat,
+    title:title, body:body,
+    replies:[], likes:0, liked:false
+  });
+  document.getElementById('np-title').value='';
+  document.getElementById('np-body').value='';
+  closeModal('modal-newpost');
+  renderFeed();
+}
+
+// MODAL HELPERS
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// UTIL
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
